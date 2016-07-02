@@ -1,0 +1,40 @@
+
+.deck figure {
+    background-color: #212124;  /*N.B. The slides must be given a background colour.*/
+}
+
+/*Reset.*/
+figure,
+figcaption {
+    margin: 0;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    color: #f0f0f0;
+    background-color: #212124;
+}
+
+a {
+    text-decoration: none;
+    color: #f0f0f0;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #006dac;
+}
+
+.deck {
+    width: 240px;
+}
+
+.deck figure,
+.deck figcaption {
+    text-align: center;
+}
+
+.deck figcaption .title {
+    font-style: italic;
+}
