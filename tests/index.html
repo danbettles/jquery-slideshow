@@ -10,7 +10,7 @@
     <body>
         <h1>jquery-slideshow</h1>
 
-        <div class="deck">
+        <div class="deck" id="deck-1">
             <figure>
                 <a href="https://flic.kr/p/8Mtwp6"><img src="images/5109109979_b60774eeda_m.jpg" alt="&quot;Buddha&quot; by dave bennion"/></a>
                 <figcaption><a href="https://flic.kr/p/8Mtwp6"><span class="title">Buddha</span> by dave bennion</a></figcaption>
@@ -27,11 +27,76 @@
             </figure>
         </div>
 
+        <div class="deck" id="deck-2">
+            <figure>
+                <a href="https://flic.kr/p/xP3bo"><img src="images/359988970_4425fbea24_m.jpg" alt="&quot;buddha birds&quot; by Eric Brochu"/></a>
+                <figcaption><a href="https://flic.kr/p/xP3bo"><span class="title">buddha birds</span> by Eric Brochu</a></figcaption>
+            </figure>
+        </div>
+
+        <div class="deck" id="deck-3">
+            <figure>
+                <a href="https://flic.kr/p/8Mtwp6"><img src="images/5109109979_b60774eeda_m.jpg" alt="&quot;Buddha&quot; by dave bennion"/></a>
+                <figcaption><a href="https://flic.kr/p/8Mtwp6"><span class="title">Buddha</span> by dave bennion</a></figcaption>
+            </figure>
+
+            <figure>
+                <a href="https://flic.kr/p/GAWaVw"><img src="images/26649601012_b0779c37c5_m.jpg" alt="&quot;Golden Buddha Revealed&quot; by Thrill Me"/></a>
+                <figcaption><a href="https://flic.kr/p/GAWaVw"><span class="title">Golden Buddha Revealed</span> by Thrill Me</a></figcaption>
+            </figure>
+        </div>
+
+        <div class="deck" id="deck-4">
+            <figure>
+                <a href="https://flic.kr/p/8Mtwp6"><img src="images/5109109979_b60774eeda_m.jpg" alt="&quot;Buddha&quot; by dave bennion"/></a>
+                <figcaption><a href="https://flic.kr/p/8Mtwp6"><span class="title">Buddha</span> by dave bennion</a></figcaption>
+            </figure>
+
+            <figure>
+                <a href="https://flic.kr/p/GAWaVw"><img src="images/26649601012_b0779c37c5_m.jpg" alt="&quot;Golden Buddha Revealed&quot; by Thrill Me"/></a>
+                <figcaption><a href="https://flic.kr/p/GAWaVw"><span class="title">Golden Buddha Revealed</span> by Thrill Me</a></figcaption>
+            </figure>
+        </div>
+
+        <div class="deck" id="deck-5">
+            <figure>
+                <a href="https://flic.kr/p/8Mtwp6"><img src="images/5109109979_b60774eeda_m.jpg" alt="&quot;Buddha&quot; by dave bennion"/></a>
+                <figcaption><a href="https://flic.kr/p/8Mtwp6"><span class="title">Buddha</span> by dave bennion</a></figcaption>
+            </figure>
+
+            <figure>
+                <a href="https://flic.kr/p/GAWaVw"><img src="images/26649601012_b0779c37c5_m.jpg" alt="&quot;Golden Buddha Revealed&quot; by Thrill Me"/></a>
+                <figcaption><a href="https://flic.kr/p/GAWaVw"><span class="title">Golden Buddha Revealed</span> by Thrill Me</a></figcaption>
+            </figure>
+        </div>
+
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
         <script src="../jquery.slideshow.js"></script>
 
         <script>
-            jQuery('.deck').slideshow();
+/*jslint browser:true*/
+/*global jQuery*/
+
+jQuery("#deck-1").slideshow({
+    //height: "equalize"
+});
+
+//This deck contains only one slide.  There will be no transitions.
+jQuery("#deck-2").slideshow({
+    //height: "equalize"
+});
+
+jQuery("#deck-3").slideshow({
+    height: "auto"
+});
+
+jQuery("#deck-4").slideshow({
+    height: ""
+});
+
+jQuery("#deck-5").slideshow({
+    height: "400px"
+});
         </script>
     </body>
 </html>

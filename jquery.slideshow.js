@@ -18,7 +18,8 @@
             .setIntervalId(undefined)
             .setDeckEl($deck)
             .setOptions(jQuery.extend({
-                delay: 7000
+                delay: 7000,
+                height: Slideshow.HEIGHT_EQUALIZE
             }, options));
     }
 
@@ -26,6 +27,13 @@
      * @type {String}
      */
     Slideshow.CSS_CLASS_VISIBLE = "jquery-slideshow-visible";
+
+    /**#@+
+     * @type {String}
+     */
+    Slideshow.HEIGHT_EQUALIZE = "equalize";
+    Slideshow.HEIGHT_AUTO = "auto";
+    /**#@-*/
 
     Slideshow.prototype = {
 
@@ -141,34 +149,51 @@
          * @returns {Slideshow}
          */
         applyStyles: function () {
-            var deckWidth,
-                maxSlideHeight = 0;
+            var optionHeight,
+                finalHeight;
 
-            this.getDeckEl().css("width", "");
+            optionHeight = this.getOptions().height;
 
-            deckWidth = this.getDeckEl().width();
+            //Deck and slides:
 
-            this.getSlideEls().css("height", "");
+            finalHeight = optionHeight;
 
-            this.getSlideEls().each(function () {
-                var currSlideHeight;
+            switch (optionHeight) {
+            case Slideshow.HEIGHT_EQUALIZE:
+                finalHeight = 0;
 
-                currSlideHeight = jQuery(this).outerHeight(true);
+                this.getSlideEls().each(function () {
+                    var currSlideHeight;
 
-                if (currSlideHeight > maxSlideHeight) {
-                    maxSlideHeight = currSlideHeight;
-                }
-            });
+                    currSlideHeight = jQuery(this).outerHeight(true);
+
+                    if (currSlideHeight > finalHeight) {
+                        finalHeight = currSlideHeight;
+                    }
+                });
+
+                break;
+
+            case Slideshow.HEIGHT_AUTO:
+                finalHeight = "";
+                break;
+            }
 
             jQuery()
                 .add(this.getDeckEl())
                 .add(this.getSlideEls())
-                    .css({
-                        width: deckWidth,
-                        height: maxSlideHeight
-                    });
+                .css({
+                    width: this.getDeckEl().width(),
+                    height: finalHeight
+                });
 
-            this.getDeckEl().css("position", "relative");
+            //Deck only:
+
+            this.getDeckEl().css({
+                position: "relative"
+            });
+
+            //Slides only:
 
             this.getSlideEls().css({
                 position: "absolute",
@@ -204,6 +229,10 @@
         showNextSlide: function () {
             var $currSlide,
                 $nextSlide;
+
+            if (this.getSlideEls().size() <= 1) {
+                return;
+            }
 
             $currSlide = this.getSlideEls().filter("." + Slideshow.CSS_CLASS_VISIBLE);
 
@@ -243,12 +272,7 @@
          */
         slideshow: function (options) {
             return this.each(function () {
-                var $deck = jQuery(this),
-                    slideshow;
-
-                slideshow = new Slideshow($deck, options || {});
-
-                slideshow
+                (new Slideshow(jQuery(this), options || {}))
                     .setUp()
                     .start();
             });
