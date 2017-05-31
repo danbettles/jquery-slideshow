@@ -8,6 +8,12 @@
 (function (jQuery, window) {
     "use strict";
 
+    var CSS_CLASS_VISIBLE = "jquery-slideshow-visible",
+        DIMENSION_WIDTH = "width",
+        DIMENSION_HEIGHT = "height",
+        SIZE_MAX_CONTENT = "max-content",
+        SIZE_AUTO = "auto";
+
     /**
      * @constructor
      * @param {jQuery} $deck
@@ -19,21 +25,11 @@
             .setDeckEl($deck)
             .setOptions(jQuery.extend({
                 delay: 7000,
-                height: Slideshow.HEIGHT_EQUALIZE
+                width: SIZE_MAX_CONTENT,
+                height: SIZE_MAX_CONTENT,
+                stopOnHover: true
             }, options));
     }
-
-    /**
-     * @type {String}
-     */
-    Slideshow.CSS_CLASS_VISIBLE = "jquery-slideshow-visible";
-
-    /**#@+
-     * @type {String}
-     */
-    Slideshow.HEIGHT_EQUALIZE = "equalize";
-    Slideshow.HEIGHT_AUTO = "auto";
-    /**#@-*/
 
     Slideshow.prototype = {
 
@@ -42,11 +38,10 @@
          *
          * @private
          * @param {Number} intervalId
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
         setIntervalId: function (intervalId) {
             this.intervalId = intervalId;
-
             return this;
         },
 
@@ -63,11 +58,10 @@
         /**
          * @private
          * @param {jQuery} $deck
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
         setDeckEl: function ($deck) {
             this.$deck = $deck;
-
             return this;
         },
 
@@ -79,6 +73,7 @@
         },
 
         /**
+         * @private
          * @returns {jQuery}
          */
         getSlideEls: function () {
@@ -88,11 +83,10 @@
         /**
          * @private
          * @param {Object} options
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
         setOptions: function (options) {
             this.options = options;
-
             return this;
         },
 
@@ -108,12 +102,12 @@
          *
          * @private
          * @param {jQuery} $slide
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
-        raiseSlide: function ($slide) {
+        showSlide: function ($slide) {
             $slide
                 .css("z-index", 3)
-                .addClass(Slideshow.CSS_CLASS_VISIBLE);
+                .addClass(CSS_CLASS_VISIBLE);
 
             return this;
         },
@@ -122,7 +116,7 @@
          * @private
          * @param {jQuery} $from
          * @param {jQuery} $to
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
         transitionBetweenSlides: function ($from, $to) {
             var slideshow = this;
@@ -134,97 +128,72 @@
             $from.fadeOut(700, function () {
                 $from
                     .css("z-index", 1)
-                    .removeClass(Slideshow.CSS_CLASS_VISIBLE);
+                    .removeClass(CSS_CLASS_VISIBLE);
 
-                slideshow.raiseSlide($to);
+                slideshow.showSlide($to);
             });
 
             return this;
         },
 
         /**
-         * Applies styles to the deck and the slides.
-         *
          * @private
-         * @returns {Slideshow}
+         * @param {String} dimension
+         * @param {Number|String} size
+         * @returns {Slideshow} this
          */
-        applyStyles: function () {
-            var optionHeight,
-                finalHeight;
+        setDimensionSize: function (dimension, size) {
+            var finalSize;
 
-            optionHeight = this.getOptions().height;
+            finalSize = size;
 
-            //Deck and slides:
-
-            finalHeight = optionHeight;
-
-            switch (optionHeight) {
-            case Slideshow.HEIGHT_EQUALIZE:
-                finalHeight = 0;
+            switch (size) {
+            case SIZE_MAX_CONTENT:
+                finalSize = 0;
 
                 this.getSlideEls().each(function () {
-                    var currSlideHeight;
+                    var $slide = jQuery(this),
+                        outerSizeMethodName,
+                        currSize;
 
-                    currSlideHeight = jQuery(this).outerHeight(true);
+                    outerSizeMethodName = "outer" + dimension.substr(0, 1).toUpperCase() + dimension.substr(1);
+                    currSize = $slide[outerSizeMethodName](true);
 
-                    if (currSlideHeight > finalHeight) {
-                        finalHeight = currSlideHeight;
+                    if (currSize > finalSize) {
+                        finalSize = currSize;
                     }
                 });
 
                 break;
 
-            case Slideshow.HEIGHT_AUTO:
-                finalHeight = "";
+            case SIZE_AUTO:
+                finalSize = "";
                 break;
             }
 
             jQuery()
                 .add(this.getDeckEl())
                 .add(this.getSlideEls())
-                .css({
-                    width: this.getDeckEl().width(),
-                    height: finalHeight
-                });
-
-            //Deck only:
-
-            this.getDeckEl().css({
-                position: "relative"
-            });
-
-            //Slides only:
-
-            this.getSlideEls().css({
-                position: "absolute",
-                zIndex: 1
-            });
+                .css(dimension, finalSize);
 
             return this;
         },
 
         /**
-         * Sets-up the GUI.
+         * Recalculates the width and height of the deck and each of the slides.
          *
-         * @returns {Slideshow}
+         * @private
+         * @returns {Slideshow} this
          */
-        setUp: function () {
-            var slideshow = this;
-
-            this.applyStyles();
-
-            this.raiseSlide(this.getSlideEls().first());
-
-            jQuery(window).resize(function () {
-                slideshow.applyStyles();
-            });
-
-            return this;
+        resize: function () {
+            return this
+                .setDimensionSize(DIMENSION_WIDTH, this.getOptions().width)
+                .setDimensionSize(DIMENSION_HEIGHT, this.getOptions().height);
         },
 
         /**
          * @private
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
         showNextSlide: function () {
             var $currSlide,
@@ -234,7 +203,7 @@
                 return;
             }
 
-            $currSlide = this.getSlideEls().filter("." + Slideshow.CSS_CLASS_VISIBLE);
+            $currSlide = this.getSlideEls().filter("." + CSS_CLASS_VISIBLE);
 
             $nextSlide = $currSlide.next();
 
@@ -248,7 +217,7 @@
         },
 
         /**
-         * @returns {Slideshow}
+         * @returns {Slideshow} this
          */
         start: function () {
             var slideshow = this,
@@ -259,6 +228,54 @@
             }, this.getOptions().delay);
 
             this.setIntervalId(intervalId);
+
+            return this;
+        },
+
+        /**
+         * @returns {Slideshow} this
+         */
+        stop: function () {
+            window.clearInterval(this.getIntervalId());
+            this.setIntervalId(undefined);
+
+            return this;
+        },
+
+        /**
+         * Sets-up the GUI.
+         *
+         * @returns {Slideshow} this
+         */
+        setUp: function () {
+            var slideshow = this;
+
+            this.getDeckEl().css({
+                position: "relative"
+            });
+
+            this.getSlideEls().css({
+                position: "absolute",
+                zIndex: 1
+            });
+
+            this.resize();
+
+            this.showSlide(this.getSlideEls().first());
+
+            jQuery(window).resize(function () {
+                slideshow.resize();
+            });
+
+            this.getDeckEl().hover(function () {
+                if (slideshow.getOptions().stopOnHover) {
+                    slideshow.stop();
+                }
+            }, function () {
+                if (slideshow.getOptions().stopOnHover) {
+                    slideshow.start();
+                }
+            });
 
             return this;
         }
